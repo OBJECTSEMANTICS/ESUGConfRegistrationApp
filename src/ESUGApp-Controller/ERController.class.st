@@ -394,7 +394,6 @@ ERController >> updateAllAttendeesOf: aGroup [
 { #category : #'as yet unclassified' }
 ERController >> updateAttendee: anAttendee [
 	self updatePaymentRate: anAttendee.
-	"self generateInvoiceOf: anAttendee."
 	anAttendee save.
 	anAttendee idGroup isNotNil ifTrue: [ self updateGroup: (self getGroupOfAttendee: anAttendee) ]
 ]
@@ -402,7 +401,6 @@ ERController >> updateAttendee: anAttendee [
 { #category : #'as yet unclassified' }
 ERController >> updateGroup: aGroup [
 	self updatePaymentRateForGroup: aGroup .
-	"self generateInvoiceOf: aGroup."
 	self updateAllAttendeesOf: aGroup.
 	^ aGroup save.
 ]

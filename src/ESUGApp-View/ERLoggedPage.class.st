@@ -28,6 +28,7 @@ ERLoggedPage >> content: anObject [
 { #category : #rendering }
 ERLoggedPage >> initialize [
 	super initialize.
+	Transcript show: 'Logged'.
 	pageController := ERLoggedController new user: self session user.
 	attendee := pageController attendeeFromUser.
 	content := ERContent new.
@@ -39,36 +40,33 @@ ERLoggedPage >> initialize [
 
 { #category : #rendering }
 ERLoggedPage >> initializeNabvar [
-	| menu |
-	menu := ERMenuPage availableItemsOfMenu: self itemList.
-	navbar := menu createMenuWith: (self listOptionsFor: menu)
+	navbar := ERNav new listOptions: self itemList; yourself
 ]
 
 { #category : #rendering }
 ERLoggedPage >> itemList [
 	^ Dictionary new
 		at: 'home'
-			put: [ ERHomeView
+			put: [ "self homeComponent"ERHomeView
 				withContent: content
 				withController: pageController ];
 		at: 'admin'
-			put: [ ERAdminView
+			put: [ "self adminComponent "ERAdminView
 				on: self session user
 				withContent: content
 				withController: pageController ];
 		at: 'logout'
-			put: [ self session logout.
-    ^ self requestContext redirectTo: self application url ];
+			put: [ self logout ];
 		at: 'groupRegistration'
-			put: [ ERGroupRegistrationView
+			put: [ "self groupComponent"ERGroupRegistrationView
 				attendee: self session user
 				content: content ];
 		at: 'myRegistration'
-			put: [ ERMyRegistrationView
+			put: [ "self attendeeComponent"ERMyRegistrationView
 				attendee: attendee
 				content: content ];
 		at: 'configuration'
-			put: [ ERConfigurationView
+			put: [ "self configComponent"ERConfigurationView
 				attendee: attendee
 				content: content ];
 		yourself
@@ -93,6 +91,12 @@ ERLoggedPage >> listOptionsFor: aMenuFactory [
 ]
 
 { #category : #accessing }
+ERLoggedPage >> logout [
+	self session logout.
+    ^ self requestContext redirectTo: self application url
+]
+
+{ #category : #accessing }
 ERLoggedPage >> navbar: anObject [
 	navbar := anObject
 ]
@@ -104,7 +108,6 @@ ERLoggedPage >> pageController [
 
 { #category : #rendering }
 ERLoggedPage >> renderContentOn: html [
-	self initializeNabvar.
 	html mdlLayout
 		fixedDrawer;
 		fixedHeader;

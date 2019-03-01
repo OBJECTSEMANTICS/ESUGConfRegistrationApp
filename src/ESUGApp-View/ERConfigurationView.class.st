@@ -20,6 +20,7 @@ ERConfigurationView class >> attendee: anAttendee content: aContent [
 { #category : #initialization }
 ERConfigurationView >> initialize [
 	super initialize.
+	Transcript show: 'Pasa Config'.
 	tabs := OrderedCollection new.
 ]
 
