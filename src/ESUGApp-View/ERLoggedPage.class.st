@@ -5,14 +5,39 @@ Class {
 		'pageController',
 		'navbar',
 		'content',
-		'attendee'
+		'attendee',
+		'home',
+		'admin',
+		'group',
+		'myReg',
+		'config'
 	],
 	#category : #'ESUGApp-View-Page'
 }
 
+{ #category : #rendering }
+ERLoggedPage >> adminView [
+	admin ifNil: 
+		[ admin := ERAdminView
+				on: self session user
+				withContent: content
+				withController: pageController ].
+	admin content: content.
+	^ admin
+]
+
 { #category : #hooks }
 ERLoggedPage >> children [ 
 	^ Array with: navbar with: content
+]
+
+{ #category : #rendering }
+ERLoggedPage >> configView [
+	config ifNil: [ config := ERConfigurationView
+				attendee: attendee
+				content: content ].
+	config content: content.
+	^ config
 ]
 
 { #category : #accessing }
@@ -23,6 +48,26 @@ ERLoggedPage >> content [
 { #category : #accessing }
 ERLoggedPage >> content: anObject [
 	content := anObject
+]
+
+{ #category : #rendering }
+ERLoggedPage >> groupView [
+	group ifNil: 	
+		[ group := ERGroupRegistrationView
+				attendee: self session user
+				content: content ].
+	group content: content.
+	^ group
+]
+
+{ #category : #rendering }
+ERLoggedPage >> homeView [
+	home ifNil: 
+		[ home := ERHomeView
+				withContent: content
+				withController: pageController ].
+	home content: content.
+	^ home
 ]
 
 { #category : #rendering }
@@ -47,28 +92,17 @@ ERLoggedPage >> initializeNabvar [
 ERLoggedPage >> itemList [
 	^ Dictionary new
 		at: 'home'
-			put: [ "self homeComponent"ERHomeView
-				withContent: content
-				withController: pageController ];
+			put: [ self homeView ];
 		at: 'admin'
-			put: [ "self adminComponent "ERAdminView
-				on: self session user
-				withContent: content
-				withController: pageController ];
+			put: [ self adminView ];
 		at: 'logout'
 			put: [ self logout ];
 		at: 'groupRegistration'
-			put: [ "self groupComponent"ERGroupRegistrationView
-				attendee: self session user
-				content: content ];
+			put: [ self groupView ];
 		at: 'myRegistration'
-			put: [ "self attendeeComponent"ERMyRegistrationView
-				attendee: attendee
-				content: content ];
+			put: [ self myRegView];
 		at: 'configuration'
-			put: [ "self configComponent"ERConfigurationView
-				attendee: attendee
-				content: content ];
+			put: [ self configView ];
 		yourself
 ]
 
@@ -96,6 +130,15 @@ ERLoggedPage >> logout [
     ^ self requestContext redirectTo: self application url
 ]
 
+{ #category : #rendering }
+ERLoggedPage >> myRegView [
+	myReg ifNil: [ myReg := ERMyRegistrationView
+				attendee: attendee
+				content: content  ].
+	myReg content: content.
+	^ myReg
+]
+
 { #category : #accessing }
 ERLoggedPage >> navbar: anObject [
 	navbar := anObject
@@ -116,9 +159,4 @@ ERLoggedPage >> renderContentOn: html [
 			html render: navbar .
 			html render: content .
 		 ]
-]
-
-{ #category : #hooks }
-ERLoggedPage >> states [
-    ^ Array with: self
 ]

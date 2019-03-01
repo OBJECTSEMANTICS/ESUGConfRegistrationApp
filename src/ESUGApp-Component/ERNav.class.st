@@ -3,59 +3,93 @@ Class {
 	#superclass : #WAComponent,
 	#instVars : [
 		'title',
-		'listOptions'
+		'listOptions',
+		'admin',
+		'config',
+		'group',
+		'home',
+		'logout',
+		'myReg'
 	],
 	#category : #'ESUGApp-Component'
 }
 
 { #category : #hooks }
 ERNav >> children [
-	^ Array withAll: self listOfAvailableOptions
+	|array|
+	array := OrderedCollection new.
+	self session user isAttendee
+		ifTrue: [ array add: myReg ].
+	self session user isGroupManager
+		ifTrue: [ array add: group ].
+	self session user isAdmin
+		ifTrue: [ array add: config ].
+	self session user isStudent
+		ifTrue: [  ].
+	array add: admin.
+	array add: logout.
+	^ array yourself 
 ]
 
 { #category : #accessing }
 ERNav >> createAdminItem [
-	^ ERItemNav 
+	admin ifNil: [admin := ERItemNav 
 		label: 'Admin' 
 		icon: 'person' 
-		callback: (listOptions at: 'admin')
+		callback: (listOptions at: 'admin') ].
+	^ admin
 ]
 
 { #category : #accessing }
 ERNav >> createConfigurationItem [
-	^ ERItemNav
+	config ifNil: 
+		[
+		Transcript show: 'ConfigItem'.
+		config := ERItemNav
 		label: 'Configuration'
 		icon: 'settings'
-		callback: (listOptions at: 'configuration')
+		callback: (listOptions at: 'configuration') ].
+	^ config
 ]
 
 { #category : #accessing }
 ERNav >> createGroupManagerItem [
-	^ ERItemNav 
+	group ifNil: 
+		[ group := ERItemNav 
 		label: 'Group Registration' 
 		icon: 'group' 
-		callback: (listOptions at: 'groupRegistration')
+		callback: (listOptions at: 'groupRegistration') ].
+	^ group
 ]
 
 { #category : #accessing }
 ERNav >> createHomeItem [
-	^ ERItemNav 
+	home ifNil: 
+		[ home := ERItemNav 
 		label: 'Home' 
 		icon: 'home' 
-		callback: (listOptions at: 'home')
+		callback: (listOptions at: 'home') ].
+	^ home
 ]
 
 { #category : #accessing }
 ERNav >> createLogoutItem [
-	^ ERItemNav label: 'Logout' icon: 'backspace' callback: (listOptions at: 'logout')
+	logout ifNil: 
+		[ logout := ERItemNav 
+			label: 'Logout' 
+			icon: 'backspace' 
+			callback: (listOptions at: 'logout') ].
+	^ logout 
 ]
 
 { #category : #accessing }
 ERNav >> createMyRegistrationItem [
-	^ ERItemNav 
+	myReg ifNil: 
+		[ myReg := ERItemNav 
 		label: 'My Registration' 
 		icon: 'assignment' 
-		callback: (listOptions at: 'myRegistration')
+		callback: (listOptions at: 'myRegistration') ].
+	^ myReg
 ]
 
 { #category : #initialization }
@@ -79,7 +113,7 @@ ERNav >> listOfAvailableOptions [
 	self session user isStudent
 		ifTrue: [  ].
 	list add: self createAdminItem.
-	list add: self createLogoutItem .
+	list add: self createLogoutItem.
 	^ list
 ]
 
@@ -97,7 +131,9 @@ ERNav >> renderContentOn: html [
 		with: [ self renderHeaderESUGOn: html.
 			html mdlNavigation
 				class: 'demo-navigation mdl-color--blue-grey-800';
-				with: [ self listOfAvailableOptions do: [ :each | html render: each ] ] ]
+				with: [ |list|
+					list := self listOfAvailableOptions.
+					list do: [ :each | html render: each ] ] ]
 ]
 
 { #category : #rendering }
