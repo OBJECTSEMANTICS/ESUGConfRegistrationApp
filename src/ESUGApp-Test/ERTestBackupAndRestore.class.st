@@ -64,14 +64,17 @@ ERTestBackupAndRestore >> testBackupAfterRegisterGroupManager [
 ERTestBackupAndRestore >> testRestoreData [
 	"This test verify that the state after restore is equal to data was removed"
 	|stateBefore stateAfter|
+	self timeLimit: 30 seconds.
 	self registerAsGroupManager.
+	(Delay forSeconds: 5) wait.
 	stateBefore := ERBackupRestore new objectsToBackup.
 	(Delay forSeconds: 5) wait.
 	"Delete all data of database"
 	self deleteAll.
+	(Delay forSeconds: 5) wait.
 	"Restore data"
 	ESUGSetUp start.
-	(Delay forSeconds: 3) wait.
+	(Delay forSeconds: 5) wait.
 	stateAfter := ERBackupRestore new objectsToBackup.
 	self assert: stateBefore equals: stateAfter
 ]
