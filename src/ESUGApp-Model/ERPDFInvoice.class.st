@@ -222,97 +222,80 @@ ERPDFInvoice >> addInfoInvoice: pdfPage of: user [
 
 { #category : #adding }
 ERPDFInvoice >> addInfoPayment: pdfPage of: user [
-	pdfPage add: (PDFTextElement new
-		textColor: self colorTitle;
-		font: self fontBoldContent;
-		from: 20 mm @ 178 mm;
-		text: 'Pay by Credit Card or Paypal:');
-	add: (PDFTextElement new
-		font: self fontContent;
-		from: 30 mm @ 183 mm;
-		text: 'Pay to our Paypal account');
-	add: (PDFTextElement new
-		textColor: self colorLink;
-		font: self fontContent;
-		from: 80 mm @ 183 mm;
-		text: 'board@esug.org');
-	add: (PDFTextElement new
-		font: self fontContent;
-		from: 30 mm @ 188 mm;
-		text: 'More infos: ');
-	add: (PDFTextElement new
-		textColor: self colorLink;
-		font: self fontContent;
-		from: 55 mm @ 188 mm;
-		text: 'http://www.esug.org/wiki/pier/About/SupportESUG');
-	add: (PDFTextElement new
-		textColor: self colorTitle;
-		font: self fontBoldContent;
-		from: 20 mm @ 196 mm;
-		text: 'Pay by Bank Transfer:');
-	add: (PDFDataTableElement new
-		data: (Array with: (
-			Array with: 'Account Owner:' with: controller conference fee bankAccountInformation owner) with:
-			(Array with: 'Bank name:' with: controller conference fee bankAccountInformation bankInformation name) with:
-			(Array with: 'IBAN:' with: controller conference fee bankAccountInformation iban ) with:
-			(Array with: 'BIC/SWIFT Code:' with: controller conference fee bankAccountInformation bankInformation bic)
-		);
-		font: self fontContent;
-		from: 30 mm @ 202 mm;
-		dimension: 160 mm @ 20 mm;
-		style: #noBorder; yourself
-	);
-	add: (PDFTextElement new
-		textColor: self colorTitle;
-		font: self fontBoldContent;
-		from: 20 mm @ 225 mm;
-		text: 'Payment status:');
-	add: (PDFTextElement new
-		font: self fontContent;
-		from: 30 mm @ 230 mm;
-		text: (self paymentStatus: user)).
+	pdfPage
+		add:
+			(PDFTextElement new
+				textColor: self colorTitle;
+				font: self fontBoldContent;
+				from: 20 mm @ 178 mm;
+				text: 'Pay by Credit Card or Paypal:');
+		add:
+			(PDFTextElement new
+				font: self fontContent;
+				from: 30 mm @ 183 mm;
+				text: 'Pay to our Paypal account');
+		add:
+			(PDFTextElement new
+				textColor: self colorLink;
+				font: self fontContent;
+				from: 80 mm @ 183 mm;
+				text: 'board@esug.org');
+		add:
+			(PDFTextElement new
+				font: self fontContent;
+				from: 30 mm @ 188 mm;
+				text: 'More infos: ');
+		add:
+			(PDFTextElement new
+				textColor: self colorLink;
+				font: self fontContent;
+				from: 55 mm @ 188 mm;
+				text: 'http://www.esug.org/wiki/pier/About/SupportESUG');
+		add:
+			(PDFTextElement new
+				textColor: self colorTitle;
+				font: self fontBoldContent;
+				from: 20 mm @ 196 mm;
+				text: 'Pay by Bank Transfer:');
+		add:
+			(PDFDataTableElement new
+				data: self valuesOfBankTransfer;
+				font: self fontContent;
+				from: 30 mm @ 202 mm;
+				dimension: 160 mm @ 20 mm;
+				style: #noBorder;
+				yourself);
+		add:
+			(PDFTextElement new
+				textColor: self colorTitle;
+				font: self fontBoldContent;
+				from: 20 mm @ 225 mm;
+				text: 'Payment status:');
+		add:
+			(PDFTextElement new
+				font: self fontContent;
+				from: 30 mm @ 230 mm;
+				text: (self paymentStatus: user))
+]
+
+{ #category : #templates }
+ERPDFInvoice >> addPharoLogo: pharoLogo [
+	^ (PDFJpegElement fromStream: pharoLogo readStream)
+		from: 70 mm @ 10 mm;
+		width: 60 mm
 ]
 
 { #category : #adding }
 ERPDFInvoice >> addTablePayment: pdfPage of: user [
 	| fontLegend currency |
-	currency :=  (128 asCharacter) asString, ' ', (user paymentAmount ifNil: [ 0 ]) asString.
-	fontLegend := PDFTimesFont size: 10pt.
-	pdfPage add: (PDFDataTableWithColumnsCaptionElement new 
-		captions: #('Description' 'Total');
-		data: (Array with: (Array with: 'Full Registration to ESUG19' with: currency));
-		from: 20 mm @ 115 mm;
-		dimension: 170 mm @ 22 mm;
-		customizationBlock: [ :cell :x :y :data | 
-			y = 1 ifTrue: [
-				x = 1 ifTrue: [ cell dimension: 140 mm @ 4 mm ]
-				ifFalse: [ cell dimension: 30 mm @ 4 mm ].
-			].
-			x even ifTrue: [ cell alignment: (PDFAlignment right) ]
-		];
-		style: #dataTableWithColoredCaption;
-		yourself);
-	add: (PDFDataTableElement new
-		data: (
-			Array with: (Array with: 'Total to pay:' with: currency)
-			with: (Array with: 'Not subjected to VAT' with: '')
-			with: (Array with: 'Amounts are in Euro (EUR)' with: ''));
-		from: 20 mm @ 142 mm;
-		dimension: 170 mm @ 15 mm;
-		customizationBlock: [ :cell :x :y :data | 
-			y = 1 ifTrue: [ x = 1 ifTrue: [ cell textColor: self colorTitle; font: self fontBoldContent ] ] 
-			ifFalse: [ cell font: self fontFooter ]
-		];
-		yourself
-	);
-	add: (PDFTextElement new
-		font: fontLegend;
-		from: 22 mm @ 158 mm;
-		text: 'ESUG is a French Association of 1901 law (non-profit organization)');
-	add: (PDFTextElement new
-		font: fontLegend;
-		from: 22 mm @ 163 mm;
-		text: 'and it is not subjected to VAT, "TVA non applicable - article 293 B du CGI".').
+	currency := 128 asCharacter asString , ' '
+		, (user paymentAmount ifNil: [ 0 ]) asString.
+	fontLegend := PDFTimesFont size: 10 pt.
+	pdfPage
+		add: (self dataTableOfDescriptionOfInvoiceWith: currency);
+		add: (self dataTableOfTotalWith: currency);
+		add: (self firstLineOfInvoiceDescriptionWith: fontLegend);
+		add: (self secondLineOfInvoiceDescriptionWith: fontLegend)
 ]
 
 { #category : #colors }
@@ -336,8 +319,50 @@ ERPDFInvoice >> controller: anObject [
 ]
 
 { #category : #adding }
+ERPDFInvoice >> dataTableOfDescriptionOfInvoiceWith: currency [
+	^ PDFDataTableWithColumnsCaptionElement new
+		captions: #('Description' 'Total');
+		data: (self valuesForTableWith: currency);
+		from: 20 mm @ 115 mm;
+		dimension: 170 mm @ 22 mm;
+		customizationBlock: [ :cell :x :y :data | 
+			y = 1
+				ifTrue: [ x = 1
+						ifTrue: [ cell dimension: 140 mm @ 4 mm ]
+						ifFalse: [ cell dimension: 30 mm @ 4 mm ] ].
+			x even
+				ifTrue: [ cell alignment: PDFAlignment right ] ];
+		style: #dataTableWithColoredCaption;
+		yourself
+]
+
+{ #category : #adding }
+ERPDFInvoice >> dataTableOfTotalWith: currency [
+	^ PDFDataTableElement new
+		data: (self valuesTotalTableWith: currency);
+		from: 20 mm @ 142 mm;
+		dimension: 170 mm @ 15 mm;
+		customizationBlock: [ :cell :x :y :data | 
+			y = 1
+				ifTrue: [ x = 1
+						ifTrue: [ cell
+								textColor: self colorTitle;
+								font: self fontBoldContent ] ]
+				ifFalse: [ cell font: self fontFooter ] ];
+		yourself
+]
+
+{ #category : #adding }
 ERPDFInvoice >> dateToday [
 	^ Date today monthName asString, ' ', Date today dayOfMonth asString, ', ', Date today year asString
+]
+
+{ #category : #adding }
+ERPDFInvoice >> firstLineOfInvoiceDescriptionWith: fontLegend [
+	^ PDFTextElement new
+		font: fontLegend;
+		from: 22 mm @ 158 mm;
+		text: 'ESUG is a French Association of 1901 law (non-profit organization)'
 ]
 
 { #category : #fonts }
@@ -369,31 +394,39 @@ ERPDFInvoice >> paymentStatus: user [
 		^ 'Unpaid'
 ]
 
+{ #category : #adding }
+ERPDFInvoice >> secondLineOfInvoiceDescriptionWith: fontLegend [
+	^ PDFTextElement new
+		font: fontLegend;
+		from: 22 mm @ 163 mm;
+		text:
+			'and it is not subjected to VAT, "TVA non applicable - article 293 B du CGI".'
+]
+
 { #category : #templates }
 ERPDFInvoice >> templateRegistrationInvoice: aStream of: user [
 	| pharoLogo pdfDoc pdfPage |
-	controller := ERController new .
+	controller := ERController new.
 	pharoLogo := CssForLoginMDL new esugJpg.
 	pdfDoc := PDFDocument new.
 	pdfDoc styleSheet > #noBorder drawColor: self colorBorder.
 	pdfDoc styleSheet > #noBorder > #cell alignment: PDFAlignment left.
-	pdfDoc styleSheet > #dataTableWithColoredCaption 
+	(pdfDoc styleSheet > #dataTableWithColoredCaption)
 		font: self fontContent;
 		drawColor: self colorBorder;
 		margin: 10 pt.
-	pdfDoc styleSheet > #dataTableWithColoredCaption > #caption
-		font: ((self fontContent) bold: true);
+	(pdfDoc styleSheet > #dataTableWithColoredCaption > #caption)
+		font: (self fontContent bold: true);
 		textColor: self colorTitle.
-	pdfDoc styleSheet > #dataTableWithColoredCaption > #cell alignment: PDFAlignment left.
+	pdfDoc styleSheet > #dataTableWithColoredCaption > #cell
+		alignment: PDFAlignment left.
 	pdfDoc styleSheet > #datatable drawColor: self colorBorder.
-	pdfDoc styleSheet > #datatable > #cell 
+	(pdfDoc styleSheet > #datatable > #cell)
 		font: self fontContent;
-		alignment: PDFAlignment right; 
+		alignment: PDFAlignment right;
 		margin: 20 pt.
 	pdfPage := PDFPage new.
-	pdfPage add: ((PDFJpegElement fromStream: pharoLogo readStream)
-			from: 70 mm @ 10 mm;
-			width: 60mm). 
+	pdfPage add: (self addPharoLogo: pharoLogo).
 	self addHeader: pdfPage.
 	self addInfoInvoice: pdfPage of: user.
 	self addTablePayment: pdfPage of: user.
@@ -403,4 +436,39 @@ ERPDFInvoice >> templateRegistrationInvoice: aStream of: user [
 	pdfDoc add: pdfPage.
 	pdfDoc exportTo: aStream.
 	^ pdfDoc
+]
+
+{ #category : #adding }
+ERPDFInvoice >> valuesForTableWith: currency [
+	^ Array
+		with: (Array with: 'Full Registration to ESUG19' with: currency)
+]
+
+{ #category : #adding }
+ERPDFInvoice >> valuesOfBankTransfer [
+	^ Array
+		with:
+			(Array
+				with: 'Account Owner:'
+				with: controller conference fee bankAccountInformation owner)
+		with:
+			(Array
+				with: 'Bank name:'
+				with: controller conference fee bankAccountInformation bankInformation name)
+		with:
+			(Array
+				with: 'IBAN:'
+				with: controller conference fee bankAccountInformation iban)
+		with:
+			(Array
+				with: 'BIC/SWIFT Code:'
+				with: controller conference fee bankAccountInformation bankInformation bic)
+]
+
+{ #category : #adding }
+ERPDFInvoice >> valuesTotalTableWith: currency [
+	^ Array
+		with: (Array with: 'Total to pay:' with: currency)
+		with: (Array with: 'Not subjected to VAT' with: '')
+		with: (Array with: 'Amounts are in Euro (EUR)' with: '')
 ]

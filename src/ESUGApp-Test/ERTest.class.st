@@ -1,6 +1,6 @@
 Class {
 	#name : #ERTest,
-	#superclass : #TestCase,
+	#superclass : #BPParasolSelfTestCase,
 	#instVars : [
 		'store',
 		'controller'
@@ -257,6 +257,7 @@ ERTest >> deleteAll [
 				on: Error
 				do: [  ] ].
 	ERConference coolDown.
+	^ true
 ]
 
 { #category : #running }

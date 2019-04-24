@@ -2,7 +2,6 @@ Class {
 	#name : #ERParasolTest,
 	#superclass : #ERTest,
 	#instVars : [
-		'driver',
 		'acceptFormButton'
 	],
 	#category : #'ESUGApp-Test-Parasol'

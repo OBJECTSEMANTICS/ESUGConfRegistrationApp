@@ -73,6 +73,5 @@ ERTestBackupAndRestore >> testRestoreData [
 	ESUGSetUp start.
 	(Delay forSeconds: 3) wait.
 	stateAfter := ERBackupRestore new objectsToBackup.
-	
 	self assert: stateBefore equals: stateAfter
 ]
