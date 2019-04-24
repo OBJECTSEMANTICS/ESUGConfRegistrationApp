@@ -1,6 +1,6 @@
 Class {
 	#name : #ERTest,
-	#superclass : #BPParasolSelfTestCase,
+	#superclass : #TestCase,
 	#instVars : [
 		'store',
 		'controller'

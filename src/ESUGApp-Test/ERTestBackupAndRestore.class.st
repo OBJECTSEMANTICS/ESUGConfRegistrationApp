@@ -64,6 +64,8 @@ ERTestBackupAndRestore >> testBackupAfterRegisterGroupManager [
 ERTestBackupAndRestore >> testRestoreData [
 	"This test verify that the state after restore is equal to data was removed"
 	|stateBefore stateAfter|
+	"Skip in Travis CI"
+	self skipOnPharoCITestingEnvironment.
 	self timeLimit: 30 seconds.
 	self registerAsGroupManager.
 	(Delay forSeconds: 5) wait.
